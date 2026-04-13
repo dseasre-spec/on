@@ -5,7 +5,7 @@ export const mockArticles = [
     id: '1',
     title: 'الهلال يتأهل إلى نهائي دوري أبطال آسيا بفوز كبير',
     summary: 'حقق فريق الهلال السعودي فوزاً كاسحاً على منافسه في الدور نصف النهائي',
-    image_url: 'https://images.unsplash.com/photo-1508098682722-e99c643e7485?w=800',
+    image_url: 'https://raw.githubusercontent.com/dseasre-spec/img/refs/heads/main/focalpoint.avif',
     category: 'مباريات',
     is_featured: true,
     is_live: false,
