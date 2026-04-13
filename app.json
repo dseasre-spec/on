@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "ركنية",
+    "slug": "ruknia",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#161A20"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ruknia.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#161A20"
+      },
+      "package": "com.ruknia.sports"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
