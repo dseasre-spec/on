@@ -16,7 +16,7 @@ import LiveCard from '../components/LiveCard';
 import SectionHeader from '../components/SectionHeader';
 import { fetchArticles } from '../api/articlesApi';
 import { colors, fonts, spacing } from '../theme/colors';
-import { subscribeToArticles } from "../api/articlesApi';
+import { subscribeToArticles } from "../api/articlesApi";
 
 export default function HomeScreen() {
   const [articles, setArticles] = useState([]);
