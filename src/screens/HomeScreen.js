@@ -16,6 +16,7 @@ import LiveCard from '../components/LiveCard';
 import SectionHeader from '../components/SectionHeader';
 import { fetchArticles } from '../api/articlesApi';
 import { colors, fonts, spacing } from '../theme/colors';
+import { subscribeToArticles } from "../api/articlesApi';
 
 export default function HomeScreen() {
   const [articles, setArticles] = useState([]);
@@ -36,9 +37,14 @@ export default function HomeScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+useEffect(() => {
+  const unsubscribe = subscribeToArticles((data) => {
+    setArticles(data);
+    setLoading(false);
+  });
+
+  return () => unsubscribe();
+}, []);
 
   // ── Derived lists ────────────────────────────────────────────────────────
   const featured = articles.filter((a) => a.is_featured);
