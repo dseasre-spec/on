@@ -16,9 +16,8 @@ import LiveCard from '../components/LiveCard';
 import SectionHeader from '../components/SectionHeader';
 import { fetchArticles } from '../api/articlesApi';
 import { colors, fonts, spacing } from '../theme/colors';
-import { subscribeToArticles } from "../api/articlesApi";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,21 +36,12 @@ export default function HomeScreen() {
     }
   }, []);
 
-useEffect(() => {
-  const unsubscribe = subscribeToArticles((data) => {
-    setArticles(data);
-    setLoading(false);
-  });
+  useEffect(() => { load(); }, [load]);
 
-  return () => unsubscribe();
-}, []);
-
-  // ── Derived lists ────────────────────────────────────────────────────────
   const featured = articles.filter((a) => a.is_featured);
   const live = articles.filter((a) => a.is_live);
   const news = articles.filter((a) => !a.is_featured);
 
-  // ── Loading state ────────────────────────────────────────────────────────
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -60,34 +50,24 @@ useEffect(() => {
     );
   }
 
-  // ── Build list items for FlatList ────────────────────────────────────────
-  // We compose the entire feed as a flat array so we get one scrollable list
-  // with smooth scroll performance. Sections are rendered as list items.
+  // ── Navigate to live stream ───────────────────────────────────────────────
+  const handleLiveCardPress = (article) => {
+    navigation.navigate('LiveStream', { article });
+  };
 
   const buildLiveTabItems = () => {
     const items = [];
-
-    // Hero slider
-    items.push({
-      key: 'hero',
-      type: 'hero',
-      data: featured.length ? featured : articles.slice(0, 3),
-    });
-
-    // Live section
+    items.push({ key: 'hero', type: 'hero', data: featured.length ? featured : articles.slice(0, 3) });
     if (live.length > 0) {
       items.push({ key: 'live-header', type: 'section-header', title: 'البث المباشر', live: true });
       live.forEach((a) => items.push({ key: `live-${a.id}`, type: 'live', article: a }));
     }
-
-    // News section
     items.push({ key: 'news-header', type: 'section-header', title: 'اخر الاخبار', live: false });
     if (news.length > 0) {
       news.forEach((a) => items.push({ key: `news-${a.id}`, type: 'news', article: a }));
     } else {
       items.push({ key: 'empty-news', type: 'empty' });
     }
-
     return items;
   };
 
@@ -104,15 +84,10 @@ useEffect(() => {
 
   const listItems = activeTab === 'live' ? buildLiveTabItems() : buildNewsTabItems();
 
-  // ── Render each item ─────────────────────────────────────────────────────
   const renderItem = ({ item }) => {
     switch (item.type) {
       case 'hero':
-        return (
-          <View style={styles.heroContainer}>
-            <HeroSlider articles={item.data} />
-          </View>
-        );
+        return <View style={styles.heroContainer}><HeroSlider articles={item.data} /></View>;
       case 'section-header':
         return (
           <View style={styles.sectionHeaderContainer}>
@@ -122,15 +97,15 @@ useEffect(() => {
       case 'live':
         return (
           <View style={styles.cardContainer}>
-            <LiveCard article={item.article} />
+            {/* ✅ نمرّر onPress لفتح شاشة البث */}
+            <LiveCard
+              article={item.article}
+              onPress={() => handleLiveCardPress(item.article)}
+            />
           </View>
         );
       case 'news':
-        return (
-          <View style={styles.cardContainer}>
-            <NewsCard article={item.article} />
-          </View>
-        );
+        return <View style={styles.cardContainer}><NewsCard article={item.article} /></View>;
       case 'empty':
         return (
           <View style={styles.emptyContainer}>
@@ -145,7 +120,6 @@ useEffect(() => {
   return (
     <View style={styles.screen}>
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
-
       <FlatList
         data={listItems}
         keyExtractor={(item) => item.key}
@@ -166,38 +140,12 @@ useEffect(() => {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listContent: {
-    paddingBottom: spacing.xxl * 2,
-    gap: spacing.md,
-    paddingTop: spacing.md,
-  },
-  heroContainer: {
-    // no extra padding — HeroSlider handles its own margins
-  },
-  sectionHeaderContainer: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  cardContainer: {
-    paddingHorizontal: spacing.lg,
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xxl * 2,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontFamily: fonts.regular,
-    fontSize: 13,
-    color: colors.mutedForeground,
-  },
+  screen: { flex: 1, backgroundColor: colors.background },
+  loadingContainer: { flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' },
+  listContent: { paddingBottom: spacing.xxl * 2, gap: spacing.md, paddingTop: spacing.md },
+  heroContainer: {},
+  sectionHeaderContainer: { paddingHorizontal: spacing.lg, marginTop: spacing.sm },
+  cardContainer: { paddingHorizontal: spacing.lg },
+  emptyContainer: { paddingVertical: spacing.xxl * 2, alignItems: 'center' },
+  emptyText: { fontFamily: fonts.regular, fontSize: 13, color: colors.mutedForeground },
 });
