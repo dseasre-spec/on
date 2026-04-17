@@ -1,0 +1,31 @@
+name: Build Expo APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: سحب الكود
+        uses: actions/checkout@v3
+
+      - name: تثبيت Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: تثبيت dependencies
+        run: npm install
+
+      - name: تثبيت Expo
+        run: npm install -g expo-cli
+
+      - name: تسجيل الدخول
+        run: expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+
+      - name: بناء APK
+        run: npx eas build -p android --non-interactive
